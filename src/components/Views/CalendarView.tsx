@@ -19,6 +19,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 }) => {
   const { timeBlocks, tasks, selectedDate, updateTimeBlock, scheduleTask, navigationSignal } = useStore();
   const calendarRef = useRef<FullCalendar>(null);
+  const [activeEventId, setActiveEventId] = React.useState<string | null>(null);
+  const lastTapRef = useRef<number>(0);
+
+  const handleEventTap = (eventId: string, e: React.PointerEvent | React.TouchEvent) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      e.stopPropagation();
+      setActiveEventId(prev => prev === eventId ? null : eventId);
+      lastTapRef.current = 0;
+    } else {
+      lastTapRef.current = now;
+    }
+  };
 
   const scrollToCurrentTime = (smooth = true) => {
     if (!calendarRef.current) return;
@@ -80,6 +95,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       startTime: event.startStr,
       endTime: event.endStr
     });
+    // Removed setActiveEventId(null) to persist editing mode
   };
 
   const handleDateClick = (info: any) => {
@@ -87,6 +103,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       scheduleTask(schedulingTask.id, info.dateStr);
       onCompleteScheduling();
     }
+    setActiveEventId(null);
   };
 
   const filteredBlocks = timeBlocks.filter(block => 
@@ -115,8 +132,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           }}
           height="100%"
           editable={true}
-          eventLongPressDelay={250}
-          selectLongPressDelay={250}
+          eventLongPressDelay={activeEventId ? 0 : 999999}
+          selectLongPressDelay={999999}
           nowIndicator={true}
           dayHeaders={false}
           dateClick={handleDateClick}
@@ -132,12 +149,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               end: block.endTime,
               backgroundColor: baseColor,
               borderColor: baseColor,
-              extendedProps: { completed: isCompleted }
+              extendedProps: { completed: isCompleted },
+              editable: block.id === activeEventId
             };
           })}
           eventChange={handleEventChange}
           eventContent={(arg: EventContentArg) => {
             const { completed } = arg.event.extendedProps;
+            const isActive = arg.event.id === activeEventId;
             const baseColor = arg.event.backgroundColor;
             
             // Solo Leveling Glass Effect: baseColor is rgba(71, 85, 105, 0.4) for completed
@@ -147,10 +166,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
             return (
               <div 
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  handleEventTap(arg.event.id, e);
+                }}
                 className={clsx(
                   "fc-event-glass-container",
-                  completed && "event-completed"
+                  completed && "event-completed",
+                  isActive && "is-active-editing"
                 )}
                 style={{ 
                   '--event-bg': glassColor,
@@ -269,6 +292,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           transform: scale(1.02);
           box-shadow: 0 0 20px var(--event-border);
           z-index: 5;
+        }
+        .is-active-editing {
+          border-color: #fff !important;
+          box-shadow: 0 0 25px #fff, 0 0 10px var(--event-border) !important;
+          transform: scale(1.05) !important;
+          z-index: 100 !important;
+          cursor: grabbing !important;
         }
         .event-completed {
           opacity: 0.6;

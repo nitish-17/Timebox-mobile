@@ -26,31 +26,9 @@ export const ViewManager: React.FC<ViewManagerProps> = ({
 }) => {
   const currentIndex = viewOrder.indexOf(activeView);
 
-  // Use a ref to handle drag interaction without constant re-renders
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  const handleDragEnd = (_: any, info: any) => {
-    const swipeThreshold = 100; // Increased from 50 to require more intentional swipe
-    if (info.offset.x < -swipeThreshold) {
-      // Swiped Left -> Move Right
-      const nextIndex = Math.min(currentIndex + 1, viewOrder.length - 1);
-      if (nextIndex !== currentIndex) onViewChange(viewOrder[nextIndex]);
-    } else if (info.offset.x > swipeThreshold) {
-      // Swiped Right -> Move Left
-      const prevIndex = Math.max(currentIndex - 1, 0);
-      if (prevIndex !== currentIndex) onViewChange(viewOrder[prevIndex]);
-    }
-  };
-
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#020617]">
       <motion.div
-        ref={containerRef}
-        drag="x"
-        dragDirectionLock
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.2}
-        onDragEnd={handleDragEnd}
         animate={{ x: `-${currentIndex * 100}%` }}
         transition={{
           x: { type: 'spring', stiffness: 300, damping: 30 },
