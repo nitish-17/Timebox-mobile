@@ -84,16 +84,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
                 key={cmd.label}
                 onClick={() => handleAction(cmd.type as any)}
                 disabled={isProcessing || !query.trim()}
-                className="w-full p-4 flex items-center gap-4 rounded-xl bg-slate-900/40 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all text-left group disabled:opacity-30"
+                className="w-full p-4 flex items-center gap-4 rounded-[4px] bg-slate-900/40 border border-sky-500/10 active:bg-sky-500/15 active:border-sky-500/40 transition-all text-left group disabled:opacity-30 active:shadow-[0_0_15px_rgba(14,165,233,0.2)]"
               >
-                <div className="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400 group-active:scale-90 transition-transform">
+                <div className="w-10 h-10 rounded-[4px] bg-sky-500/10 flex items-center justify-center text-sky-400 group-active:scale-90 transition-transform">
                   {cmd.icon}
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-bold text-slate-200 uppercase tracking-wider">{cmd.label}</div>
+                  <div className="text-sm font-bold text-slate-200 uppercase tracking-wider group-active:text-shadow-[0_0_8px_#0ba5e9]">{cmd.label}</div>
                   <div className="text-[10px] text-slate-500 uppercase tracking-tighter mt-0.5">{cmd.description}</div>
                 </div>
-                <div className="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-500">
+                <div className="px-2 py-1 rounded-[2px] bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-500">
                   {cmd.shortcut}
                 </div>
               </button>

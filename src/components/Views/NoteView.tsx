@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import type { NoteType, SystemMessage } from '../../types';
 import { clsx } from 'clsx';
-import { ViewHeader } from '../Navigation/ViewHeader';
 
 const PERSISTENT_TYPES: NoteType[] = ["backlog", "habits", "maintenance", "recharge"];
 const TRANSIENT_TYPES: NoteType[] = ["observation", "tracking", "other"];
@@ -85,8 +84,6 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[#020617]">
-      <ViewHeader />
-
       <header className="flex items-center bg-slate-900/40 backdrop-blur-md border-b border-sky-500/20 px-4 py-3">
         {/* Category Switcher - Horizontal Scrollable on Mobile */}
         <div className="flex-1 flex overflow-x-auto gap-2 no-scrollbar pr-2 border-r border-sky-500/10">
@@ -95,8 +92,10 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
               key={type}
               onClick={() => setActiveType(type)}
               className={clsx(
-                "flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-xl border transition-all",
-                activeType === type ? "bg-sky-500/20 border-sky-500 text-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.1)]" : "bg-slate-900/50 border-slate-800 text-slate-500"
+                "flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-[4px] border transition-all",
+                activeType === type 
+                  ? "bg-sky-500/15 border-sky-500 text-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.3)] text-shadow-[0_0_10px_#0ba5e9]" 
+                  : "bg-slate-900/50 border-slate-800 text-slate-500"
               )}
             >
               {NOTE_TYPE_ICONS[type]}
@@ -109,8 +108,10 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
               key={type}
               onClick={() => setActiveType(type)}
               className={clsx(
-                "flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-xl border transition-all",
-                activeType === type ? "bg-sky-500/20 border-sky-500 text-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.1)]" : "bg-slate-900/50 border-slate-800 text-slate-500"
+                "flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-[4px] border transition-all",
+                activeType === type 
+                  ? "bg-sky-500/15 border-sky-500 text-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.3)] text-shadow-[0_0_10px_#0ba5e9]" 
+                  : "bg-slate-900/50 border-slate-800 text-slate-500"
               )}
             >
               {NOTE_TYPE_ICONS[type]}
@@ -149,7 +150,7 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
         <span className="text-[9px] uppercase tracking-[0.4em] font-black text-sky-500/40">{activeType} interface</span>
       </div>
 
-      <div className="flex-1 p-6 pt-2">
+      <div className="flex-1 p-6 pt-2 pb-10">
         <textarea
           id="note-textarea"
           name="note-textarea"

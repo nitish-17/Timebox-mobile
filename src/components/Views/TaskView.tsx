@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useStore } from '../../hooks/useStore';
 import { TaskItem } from './TaskItem';
 import { TaskActionSheet } from '../Sheets/TaskActionSheet';
-import { ViewHeader } from '../Navigation/ViewHeader';
 import type { Task } from '../../types';
 
 interface TaskViewProps {
@@ -35,13 +34,11 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[#020617]">
-      <ViewHeader />
-      
       <div className="mobile-content pb-20 space-y-10">
         {/* Today List */}
         <section>
-          <div className="mb-4 px-2">
-            <h3 className="text-lg uppercase tracking-[0.3em] text-slate-400 font-bold">Today</h3>
+          <div className="mb-4">
+            <h3 className="text-[0.75rem] uppercase tracking-[0.15em] text-slate-500 font-bold border-b border-sky-500/20 pb-1">Today</h3>
           </div>
 
           <div className="space-y-1">
@@ -55,7 +52,7 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
               />
             ))}
             {todayTasks.length === 0 && (
-              <div className="py-8 text-center border border-dashed border-sky-500/10 rounded-xl text-lg uppercase tracking-widest text-slate-600">
+              <div className="py-8 text-center border border-dashed border-sky-500/10 rounded-[4px] text-xs uppercase tracking-[0.2em] text-slate-600">
                 No active objectives
               </div>
             )}
@@ -64,8 +61,8 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
 
         {/* Later List */}
         <section>
-          <div className="mb-4 px-2">
-            <h3 className="text-lg uppercase tracking-[0.3em] text-slate-400 font-bold">Later</h3>
+          <div className="mb-4">
+            <h3 className="text-[0.75rem] uppercase tracking-[0.15em] text-slate-500 font-bold border-b border-sky-500/20 pb-1">Later</h3>
           </div>
 
           <div className="space-y-1">
@@ -79,7 +76,7 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
               />
             ))}
             {laterTasks.length === 0 && (
-              <div className="py-8 text-center border border-dashed border-sky-500/10 rounded-xl text-lg uppercase tracking-widest text-slate-600">
+              <div className="py-8 text-center border border-dashed border-sky-500/10 rounded-[4px] text-xs uppercase tracking-[0.2em] text-slate-600">
                 Backlog empty
               </div>
             )}

@@ -52,7 +52,8 @@ export const EnergyBar: React.FC<{ config: EnergyConfig }> = ({ config }) => {
           boxShadow: `
             0 0 5px #0ba5e9,
             0 0 10px #0ba5e9,
-            0 0 20px rgba(11, 165, 233, 0.4)
+            0 0 20px #0ba5e9,
+            0 0 40px #0ba5e9
           `
         }}
       >

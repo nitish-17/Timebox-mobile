@@ -51,6 +51,7 @@ body {
   line-height: 1.5;
   color-scheme: dark;
   touch-action: manipulation;
+  text-shadow: 0 0 8px rgba(14, 165, 233, 0.3);
 }
 
 .app-shell {
@@ -149,9 +150,13 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.glow-border {
+  box-shadow: 0 0 15px var(--card-glow);
+}
+
 .holographic-text {
   color: var(--text-primary);
-  text-shadow: 0 0 10px var(--accent);
+  text-shadow: 0 0 15px var(--accent);
   font-size: 1.25rem; /* ~20px */
 }
 

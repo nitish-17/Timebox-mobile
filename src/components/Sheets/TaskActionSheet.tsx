@@ -38,7 +38,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
     >
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" />
-        <Drawer.Content className="bg-[#020617] border-t border-sky-500/30 flex flex-col rounded-t-[24px] fixed bottom-0 left-0 right-0 z-[101] outline-none max-h-[90dvh]">
+        <Drawer.Content className="bg-[#020617] border-t border-sky-500/30 flex flex-col rounded-t-[12px] fixed bottom-0 left-0 right-0 z-[101] outline-none max-h-[90dvh]">
           <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-800 my-4" />
           
           <div className="p-6 pt-2 overflow-y-auto">
@@ -56,7 +56,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
               </div>
               <button 
                 onClick={onClose}
-                className="w-11 h-11 rounded-full bg-slate-900 border border-sky-500/20 flex items-center justify-center text-slate-400 active:text-sky-400"
+                className="w-11 h-11 rounded-[4px] bg-slate-900 border border-sky-500/20 flex items-center justify-center text-slate-400 active:text-sky-400"
               >
                 <X size={20} />
               </button>
@@ -68,7 +68,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
                   <span className="text-[10px] uppercase tracking-widest font-bold text-sky-500">Select Attribute Aura</span>
                   <button 
                     onClick={() => setShowColorPicker(false)}
-                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-emerald-500 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-emerald-500 px-3 py-1 rounded-[4px] bg-emerald-500/10 border border-emerald-500/20"
                   >
                     <Check size={12} /> Confirm
                   </button>
@@ -82,7 +82,6 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
                     color={task.color || 'rgba(11, 165, 233, 0.75)'} 
                     onChange={handleColorChange}
                     disableAlpha={false}
-                    width="100%"
                   />
                 </div>
               </div>
@@ -91,7 +90,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <button 
                   onClick={() => onMove(task.id, task.list === 'today' ? 'later' : 'today')}
-                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all"
+                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-[8px] bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all shadow-[0_0_15px_rgba(14,165,233,0.05)]"
                 >
                   {task.list === 'today' ? (
                     <>
@@ -108,7 +107,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
 
                 <button 
                   onClick={() => task && onStartScheduling(task)}
-                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all"
+                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-[8px] bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all shadow-[0_0_15px_rgba(14,165,233,0.05)]"
                 >
                   <Clock size={28} className="text-sky-400" />
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Schedule</span>
@@ -116,7 +115,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
 
                 <button 
                   onClick={() => setShowColorPicker(true)}
-                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all"
+                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-[8px] bg-slate-900/50 border border-sky-500/10 active:bg-sky-500/10 active:border-sky-500/30 transition-all shadow-[0_0_15px_rgba(14,165,233,0.05)]"
                 >
                   <Palette size={28} className="text-indigo-400" />
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Attribute Color</span>
@@ -124,7 +123,7 @@ export const TaskActionSheet: React.FC<TaskActionSheetProps> = ({
 
                 <button 
                   onClick={() => onDelete(task.id)}
-                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-slate-900/50 border border-red-500/10 active:bg-red-500/10 active:border-red-500/30 transition-all"
+                  className="flex flex-col items-center justify-center gap-3 p-6 rounded-[8px] bg-slate-900/50 border border-red-500/10 active:bg-red-500/10 active:border-red-500/30 transition-all shadow-[0_0_15px_rgba(239,68,68,0.05)]"
                 >
                   <Trash2 size={24} className="text-red-500" />
                   <span className="text-[10px] uppercase tracking-widest font-bold text-red-500/60">Terminate</span>

@@ -41,7 +41,7 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold uppercase tracking-widest text-sky-400 holographic-text">
+            <h2 className="text-lg font-bold uppercase tracking-widest text-sky-400 holographic-text text-shadow-[0_0_15px_#0ba5e9]">
               {format(new Date(selectedDate), 'EEEE, MMM do')}
             </h2>
             <button 
@@ -67,7 +67,7 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden border-b border-sky-500/10"
           >
-            <HiddenView onClose={() => setIsDropdownOpen(false)} />
+            <HiddenView />
           </motion.div>
         )}
       </AnimatePresence>

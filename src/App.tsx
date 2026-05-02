@@ -8,6 +8,7 @@ import type { Task } from './types';
 import { useNotifications } from './hooks/useNotifications';
 import { SystemNotifications } from './components/Navigation/SystemNotifications';
 import { useStore } from './hooks/useStore';
+import { ViewHeader } from './components/Navigation/ViewHeader';
 
 function App() {
   const { tasks } = useStore();
@@ -61,7 +62,12 @@ function App() {
     <div className="app-shell flex flex-col h-[100dvh] overflow-hidden">
       <SystemNotifications messages={messages} onDismiss={dismissMessage} />
       
-      <main className="flex-1 relative overflow-hidden">
+      <ViewHeader 
+        schedulingTask={schedulingTask} 
+        onCompleteScheduling={handleCompleteScheduling} 
+      />
+
+      <main className="flex-1 relative overflow-hidden pb-[70px]">
         <ViewManager 
           activeView={activeView} 
           onViewChange={setActiveView} 
@@ -75,7 +81,12 @@ function App() {
       {/* Floating Action Button (FAB) for Quick Add Task */}
       <button 
         className="fab-fixed-br w-14 h-14 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(14,165,233,0.5)] flex items-center justify-center text-slate-900 active:scale-95 transition-transform"
-        onClick={() => setIsQuickAddOpen(true)}
+        onClick={() => {
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
+          setIsQuickAddOpen(true);
+        }}
       >
         <Plus size={32} strokeWidth={3} />
       </button>

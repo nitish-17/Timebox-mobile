@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/Timebox-mobile/dev-sw.js?dev-sw', { scope: '/Timebox-mobile/', type: 'classic' })

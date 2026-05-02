@@ -3,17 +3,13 @@ import {
   Cpu, 
   Type, 
   Grid3X3, 
-  Settings, 
   Check,
   Zap,
-  Globe,
   Database,
   Clock,
   Download,
   Upload,
-  FileText,
-  Calendar,
-  X
+  FileText
 } from 'lucide-react';
 import { useStore } from '../../hooks/useStore';
 import { clsx } from 'clsx';
@@ -25,10 +21,9 @@ import type { NoteType, SystemNote } from '../../types';
 type TabType = 'ai' | 'ui' | 'heatmap' | 'energy' | 'backup' | 'logs';
 
 interface HiddenViewProps {
-  onClose: () => void;
 }
 
-export const HiddenView: React.FC<HiddenViewProps> = ({ onClose }) => {
+export const HiddenView: React.FC<HiddenViewProps> = () => {
   const [activeTab, setActiveTab] = useState<TabType>('ai');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { 

@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
+import type { EventContentArg } from '@fullcalendar/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { format, isSameDay } from 'date-fns';
 import { useStore } from '../../hooks/useStore';
 import { clsx } from 'clsx';
 import type { Task } from '../../types';
-import { ViewHeader } from '../Navigation/ViewHeader';
 
 interface CalendarViewProps {
   schedulingTask?: Task | null;
@@ -29,15 +29,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       
-      // Timebox Logic: Offset by 1 hour (60 mins) from the top to keep "now" in view but not at the very edge
+      // Timebox Logic: Offset by 1 hour (60 mins) from the top
       const scrollMinutes = Math.max(0, currentMinutes - 60);
       
-      // v3 specific: slotDuration is 30m and slotHeight is 70px
-      // 70px / 30min = 2.333 pixels per minute
-      const pixelsPerMinute = 70 / 30;
-      const scrollTop = scrollMinutes * pixelsPerMinute;
+      // Slot height is 80px for 30min -> 2.666 px/min
+      const pixelsPerMinute = 80 / 30;
+      const scrollTop = Math.floor(scrollMinutes * pixelsPerMinute);
 
-      // Access the scroller element directly for precision control
       const scroller = (calendarRef.current as any).elRef.current?.querySelector('.fc-scroller');
       if (scroller) {
         scroller.scrollTo({
@@ -55,24 +53,26 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       
       if (currentCalDate !== selectedDate) {
         // Only update date if it actually changed to avoid redundant re-renders
+        // Wrap in setTimeout to prevent "flushSync was called from inside a lifecycle method" error
         setTimeout(() => {
           calendarApi.gotoDate(selectedDate);
         }, 0);
       }
       
-      // Always scroll to current time on navigation, using smooth behavior
-      // Short delay to allow potential re-renders to settle
-      setTimeout(() => scrollToCurrentTime(true), 100);
+      // Use a slightly longer delay to ensure FullCalendar has finished its internal re-rendering
+      const timer = setTimeout(() => scrollToCurrentTime(true), 250);
+      return () => clearTimeout(timer);
     }
   }, [selectedDate, navigationSignal]);
 
   // Auto-refresh scroll position every 60 seconds
   useEffect(() => {
     const interval = setInterval(() => {
+      // For auto-refresh, use smooth scrolling to avoid jarring jumps
       scrollToCurrentTime(true);
     }, 60000);
     return () => clearInterval(interval);
-  }, [selectedDate]);
+  }, [selectedDate, navigationSignal]);
 
   const handleEventChange = (info: any) => {
     const { event } = info;
@@ -94,12 +94,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   );
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#020617]">
-      <ViewHeader 
-        schedulingTask={schedulingTask} 
-        onCompleteScheduling={onCompleteScheduling} 
-      />
-
+    <div className="flex flex-col h-full overflow-hidden bg-transparent">
       {/* Calendar Area */}
       <div className={clsx(
         "flex-1 overflow-hidden relative transition-all duration-500",
@@ -120,6 +115,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           }}
           height="100%"
           editable={true}
+          eventLongPressDelay={250}
+          selectLongPressDelay={250}
           nowIndicator={true}
           dayHeaders={false}
           dateClick={handleDateClick}
@@ -139,55 +136,28 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             };
           })}
           eventChange={handleEventChange}
-          eventContent={(arg) => {
+          eventContent={(arg: EventContentArg) => {
             const { completed } = arg.event.extendedProps;
             const baseColor = arg.event.backgroundColor;
-            // Solo Leveling Glass Effect: 0.75 opacity
+            
+            // Solo Leveling Glass Effect: baseColor is rgba(71, 85, 105, 0.4) for completed
             const glassColor = completed 
-              ? 'transparent' 
-              : baseColor.replace(/rgba?\((.*?)(?:,\s*[\d.]+)?\)/, 'rgba($1, 0.75)');
+              ? 'rgba(71, 85, 105, 0.4)' 
+              : baseColor.replace(/rgba?\((.*?)(?:,\s*[\d.]+)?\)/, 'rgba($1, 0.4)');
 
             return (
               <div 
+                onPointerDown={(e) => e.stopPropagation()}
                 className={clsx(
-                  "w-full h-full p-2.5 rounded-lg border relative overflow-hidden transition-all duration-300",
-                  completed 
-                    ? "opacity-60 bg-slate-800/20 border-slate-700/30" 
-                    : "backdrop-blur-md border-white/10 shadow-[0_0_20px_var(--event-glow)]"
+                  "fc-event-glass-container",
+                  completed && "event-completed"
                 )}
                 style={{ 
-                  backgroundColor: glassColor,
-                  ['--event-glow' as any]: completed ? 'transparent' : baseColor.replace(/rgba?\((.*?)(?:,\s*[\d.]+)?\)/, 'rgba($1, 0.4)')
-                }}
+                  '--event-bg': glassColor,
+                  '--event-border': baseColor,
+                } as React.CSSProperties}
               >
-                {/* Left Accent Bar - Hidden when completed in v2 style */}
-                {!completed && (
-                  <div 
-                    className="absolute left-0 top-0 w-1.5 h-full shadow-[0_0_12px_var(--event-accent)]" 
-                    style={{ 
-                      backgroundColor: baseColor,
-                      ['--event-accent' as any]: baseColor
-                    }} 
-                  />
-                )}
-                
-                <div className={clsx(
-                  "flex flex-col gap-1",
-                  !completed && "pl-2"
-                )}>
-                  <div className={clsx(
-                    "text-[11px] font-black uppercase tracking-wider leading-tight",
-                    completed ? "text-amber-400 opacity-80" : "text-slate-100"
-                  )}>
-                    {arg.event.title}
-                  </div>
-                  <div className={clsx(
-                    "text-[8px] font-bold uppercase tracking-tighter",
-                    completed ? "text-amber-500/50" : "text-slate-200 opacity-80"
-                  )}>
-                    {format(arg.event.start!, 'HH:mm')} — {format(arg.event.end!, 'HH:mm')}
-                  </div>
-                </div>
+                <div className="fc-event-title">{arg.event.title}</div>
               </div>
             );
           }}
@@ -196,41 +166,128 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       <style>{`
         .fc {
-          --fc-border-color: rgba(14, 165, 233, 0.08);
+          --fc-border-color: rgba(14, 165, 233, 0.3);
           --fc-now-indicator-color: #0ba5e9;
           --fc-today-bg-color: transparent;
           --fc-page-bg-color: transparent;
+          --fc-neutral-bg-color: transparent;
+          font-family: inherit;
         }
         .fc .fc-timegrid-slot {
-          height: 80px !important; 
+          height: 80px !important;
           border-bottom: 0;
-          border-top: 1px solid rgba(14, 165, 233, 0.05) !important;
+          border-top: 1px solid rgba(14, 165, 233, 0.3) !important;
         }
         .fc .fc-timegrid-slot-minor {
-          border-top-style: dashed !important;
+          border-top-style: solid !important;
+          border-top-color: rgba(14, 165, 233, 0.15) !important;
         }
         .fc .fc-timegrid-slot-label-cushion {
-          color: #475569;
-          font-size: 9px;
+          display: block !important;
+          padding: 0 8px 0 0 !important;
+          color: #0ba5e9;
+          font-size: 0.7rem;
           text-transform: uppercase;
-          font-family: var(--font-family);
-          padding-right: 16px !important;
-          font-weight: 800;
           letter-spacing: 0.1em;
+          transform: translateY(-50%);
+          opacity: 1;
+          text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+          white-space: nowrap;
+          text-align: right;
+          width: 65px;
+        }
+        .fc .fc-timegrid-axis-frame {
+          justify-content: flex-end;
+          padding: 0 8px 0 0 !important;
+          color: #0ba5e9;
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          opacity: 1;
+          text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+          white-space: nowrap;
+          text-align: right;
+          width: 65px;
+          overflow: visible !important;
         }
         .fc-v-event {
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          touch-action: none !important;
         }
         .fc .fc-timegrid-now-indicator-line {
           border-width: 2px 0 0;
           box-shadow: 0 0 15px #0ba5e9;
         }
         .fc .fc-timegrid-now-indicator-arrow {
-          border-color: #0ba5e9;
-          border-width: 5px 0 5px 6px;
-          margin-top: -5px;
+          border-top: 5px solid transparent !important;
+          border-bottom: 5px solid transparent !important;
+          border-left: 6px solid #0ba5e9 !important;
+          border-right: none !important;
+          background-color: transparent !important;
+          margin-top: -5px !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+        .fc-event-glass-container {
+          width: 100%;
+          height: 100%;
+          border-radius: 4px;
+          padding: 4px 6px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.3);
+          cursor: grab;
+          font-size: 0.95rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: var(--event-bg);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          user-select: none !important;
+          -webkit-user-select: none !important;
+          -webkit-touch-callout: none !important;
+        }
+        .fc-event-glass-container:not(.event-completed) {
+          box-shadow: 0 0 12px var(--event-border);
+          border-color: var(--event-border);
+        }
+        .fc-event-glass-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 3px;
+          height: 100%;
+          background: var(--event-border);
+          box-shadow: 0 0 8px var(--event-border);
+        }
+        .fc-event-glass-container:not(.event-completed):hover {
+          transform: scale(1.02);
+          box-shadow: 0 0 20px var(--event-border);
+          z-index: 5;
+        }
+        .event-completed {
+          opacity: 0.6;
+          box-shadow: none !important;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+        }
+        .event-completed::before {
+          box-shadow: none;
+        }
+        .event-completed .fc-event-title {
+          color: #facc15 !important;
+          text-shadow: none !important;
+        }
+        .fc-timegrid-event .fc-event-title {
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          font-size: 11px;
         }
       `}</style>
     </div>

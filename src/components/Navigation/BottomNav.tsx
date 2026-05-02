@@ -53,8 +53,8 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('tasks')}
         className={clsx(
-          "p-2 transition-all active:scale-90",
-          activeView === 'tasks' ? "text-sky-400" : "text-slate-500"
+          "p-2 transition-all active:scale-90 rounded-[4px]",
+          activeView === 'tasks' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Tasks"
       >
@@ -64,8 +64,8 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('calendar')}
         className={clsx(
-          "p-2 transition-all active:scale-90",
-          activeView === 'calendar' ? "text-sky-400" : "text-slate-500"
+          "p-2 transition-all active:scale-90 rounded-[4px]",
+          activeView === 'calendar' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Timeline"
       >
@@ -75,8 +75,8 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('notes')}
         className={clsx(
-          "p-2 transition-all active:scale-90",
-          activeView === 'notes' ? "text-sky-400" : "text-slate-500"
+          "p-2 transition-all active:scale-90 rounded-[4px]",
+          activeView === 'notes' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Notes"
       >
