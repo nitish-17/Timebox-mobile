@@ -70,7 +70,6 @@ function App() {
       <main className="flex-1 relative overflow-hidden pb-[70px]">
         <ViewManager 
           activeView={activeView} 
-          onViewChange={setActiveView} 
           schedulingTask={schedulingTask}
           onCompleteScheduling={handleCompleteScheduling}
           onStartScheduling={handleStartScheduling}

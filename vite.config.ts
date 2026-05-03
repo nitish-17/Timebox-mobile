@@ -8,15 +8,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["favicon.svg", "icons.svg"],
       manifest: {
-        name: "Timebox v3",
-        short_name: "Timebox",
+        name: "System",
+        short_name: "System",
         description: "Mobile-optimized personal planner",
         theme_color: "#020617",
         background_color: "#020617",
         display: "standalone",
-        orientation: "any",
+        orientation: "portrait",
+        start_url: "/Timebox-mobile/",
+        scope: "/Timebox-mobile/",
         icons: [
           {
             src: "favicon.svg",
@@ -36,10 +38,16 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+      },
       devOptions: {
         enabled: true,
       },
     }),
   ],
-  // base: "/Timebox-mobile/",
+  base: "/Timebox-mobile/",
 });

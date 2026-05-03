@@ -2,13 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { format } from "date-fns";
 import { db } from "../db/db";
-import type { Task, TimeBlock, AISettings, NoteType, EnergyConfig, UISettings } from "../types";
-
-const DEFAULT_AI_SETTINGS: AISettings = {
-  provider: "ollama",
-  baseUrl: "http://localhost:11434/v1",
-  model: "gemma4:e4b",
-};
+import type { Task, TimeBlock, NoteType, EnergyConfig, UISettings } from "../types";
 
 const DEFAULT_ENERGY_CONFIG: EnergyConfig = {
   startTime: "06:00",
@@ -36,11 +30,6 @@ export function useStore() {
     return (signal?.value as number) || 0;
   }, [settingsArray]);
 
-  const aiSettings = useMemo(() => {
-    const aiSetting = settingsArray.find((s) => s.key === "aiConfig");
-    return (aiSetting?.value as AISettings) || DEFAULT_AI_SETTINGS;
-  }, [settingsArray]);
-
   const energyConfig = useMemo(() => {
     const energySetting = settingsArray.find((s) => s.key === "energyConfig");
     return (energySetting?.value as EnergyConfig) || DEFAULT_ENERGY_CONFIG;
@@ -55,15 +44,6 @@ export function useStore() {
   useEffect(() => {
     document.documentElement.style.setProperty('--font-scale', uiSettings.fontScale.toString());
   }, [uiSettings.fontScale]);
-
-  const updateAISettings = useCallback(
-    async (updates: Partial<AISettings>) => {
-      const current = aiSettings;
-      const newValue = { ...current, ...updates };
-      await db.settings.put({ key: "aiConfig", value: newValue });
-    },
-    [aiSettings],
-  );
 
   const updateUISettings = useCallback(
     async (updates: Partial<UISettings>) => {
@@ -306,8 +286,6 @@ export function useStore() {
     scheduleTask,
     bulkScheduleTasks,
     unscheduleTask,
-    aiSettings,
-    updateAISettings,
     energyConfig,
     updateEnergyConfig,
     uiSettings,

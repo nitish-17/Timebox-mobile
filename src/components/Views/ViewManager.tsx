@@ -8,7 +8,6 @@ import type { Task, SystemMessage } from '../../types';
 
 interface ViewManagerProps {
   activeView: ViewType;
-  onViewChange: (view: ViewType) => void;
   schedulingTask: Task | null;
   onStartScheduling: (task: Task) => void;
   onCompleteScheduling: () => void;
@@ -18,7 +17,6 @@ const viewOrder: ViewType[] = ['tasks', 'calendar', 'notes'];
 
 export const ViewManager: React.FC<ViewManagerProps> = ({ 
   activeView, 
-  onViewChange,
   schedulingTask,
   onStartScheduling,
   onCompleteScheduling,

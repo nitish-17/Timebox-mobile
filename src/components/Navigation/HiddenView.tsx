@@ -1,8 +1,6 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Cpu, 
   Type, 
-  Grid3X3, 
   Check,
   Zap,
   Database,
@@ -13,24 +11,23 @@ import {
 } from 'lucide-react';
 import { useStore } from '../../hooks/useStore';
 import { clsx } from 'clsx';
-import { format, subDays, eachDayOfInterval, parseISO } from 'date-fns';
+import { format, eachDayOfInterval, parseISO } from 'date-fns';
 import { exportDB, importDB } from "dexie-export-import";
 import { db } from "../../db/db";
 import type { NoteType, SystemNote } from '../../types';
 
-type TabType = 'ai' | 'ui' | 'heatmap' | 'energy' | 'backup' | 'logs';
+type TabType = 'ui' | 'energy' | 'backup' | 'logs';
 
 interface HiddenViewProps {
 }
 
 export const HiddenView: React.FC<HiddenViewProps> = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('ai');
+  const [activeTab, setActiveTab] = useState<TabType>('ui');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { 
-    aiSettings, updateAISettings, 
     uiSettings, updateUISettings,
     energyConfig, updateEnergyConfig,
-    tasks, getNotesInRange, selectedDate
+    getNotesInRange, selectedDate
   } = useStore();
 
   // Scroll to right on mount to prioritize visibility of rightmost tabs
@@ -41,9 +38,7 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
   }, []);
 
   const tabs = [
-    { id: 'ai', icon: <Cpu size={20} />, label: 'AI Config' },
     { id: 'ui', icon: <Type size={20} />, label: 'UI Scale' },
-    { id: 'heatmap', icon: <Grid3X3 size={20} />, label: 'Heatmap' },
     { id: 'energy', icon: <Zap size={20} />, label: 'Energy' },
     { id: 'backup', icon: <Database size={20} />, label: 'Backups' },
     { id: 'logs', icon: <FileText size={20} />, label: 'Logs' },
@@ -51,46 +46,6 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'ai':
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <section>
-              <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-3 block">Intelligence Provider</label>
-              <div className="grid grid-cols-3 gap-2">
-                {['ollama', 'lmstudio', 'openai'].map(p => (
-                  <button 
-                    key={p} 
-                    onClick={() => updateAISettings({ provider: p as any })}
-                    className={clsx(
-                      "py-3 text-[10px] uppercase rounded-xl border transition-all font-bold tracking-tighter",
-                      aiSettings.provider === p 
-                        ? 'border-sky-500 bg-sky-500/10 text-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.2)]' 
-                        : 'border-slate-800 bg-slate-900/50 text-slate-500'
-                    )}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-3 block">Model Endpoint</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  value={aiSettings.baseUrl}
-                  onChange={(e) => updateAISettings({ baseUrl: e.target.value })}
-                  placeholder="http://localhost:11434/v1" 
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 outline-none focus:border-sky-500/50 transition-all"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                </div>
-              </div>
-            </section>
-          </div>
-        );
       case 'ui':
         return (
           <div className="space-y-8 py-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -160,8 +115,6 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
             </div>
           </div>
         );
-      case 'heatmap':
-        return <HeatmapContent tasks={tasks} />;
       case 'backup':
         return <BackupContent />;
       case 'logs':
@@ -204,70 +157,6 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
-    </div>
-  );
-};
-
-const HeatmapContent: React.FC<{ tasks: any[] }> = ({ tasks }) => {
-  const heatmapDays = useMemo(() => {
-    const end = new Date();
-    const start = subDays(end, 83); // 12 weeks - 1 day
-    return eachDayOfInterval({ start, end });
-  }, []);
-
-  const getDayIntensity = (date: Date) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    const completedCount = tasks.filter(t => t.date === dateStr && t.completed).length;
-    if (completedCount === 0) return 0;
-    if (completedCount < 2) return 1;
-    if (completedCount < 4) return 2;
-    return 3;
-  };
-
-  const colors = [
-    'rgba(14, 165, 233, 0.05)', 
-    'rgba(14, 165, 233, 0.3)', 
-    'rgba(14, 165, 233, 0.6)', 
-    'rgba(14, 165, 233, 1)'
-  ];
-
-  return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Neural Activity (84 Days)</h3>
-        <div className="flex gap-1.5 items-center">
-          <span className="text-[8px] text-slate-600 uppercase font-bold">Low</span>
-          {colors.map((c, i) => (
-            <div key={i} className="w-2.5 h-2.5 rounded-[2px]" style={{ background: c }} />
-          ))}
-          <span className="text-[8px] text-slate-600 uppercase font-bold ml-0.5">High</span>
-        </div>
-      </div>
-      
-      <div className="flex flex-wrap gap-[3px]">
-        {heatmapDays.map((day) => {
-          const intensity = getDayIntensity(day);
-          return (
-            <div
-              key={day.toISOString()}
-              title={format(day, 'MMM do')}
-              className="w-3.5 h-3.5 rounded-[2px] border border-white/[0.02] transition-colors duration-500"
-              style={{ backgroundColor: colors[intensity] }}
-            />
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 mt-4">
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-sky-500/10 flex flex-col gap-1.5">
-          <span className="text-[8px] text-slate-500 uppercase font-black tracking-widest">Total Cleared</span>
-          <span className="text-xl font-mono text-sky-400 font-bold">{tasks.filter(t => t.completed).length}</span>
-        </div>
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-sky-500/10 flex flex-col gap-1.5">
-          <span className="text-[8px] text-slate-500 uppercase font-black tracking-widest">Active Core</span>
-          <span className="text-xl font-mono text-emerald-400 font-bold">{tasks.filter(t => !t.completed).length}</span>
-        </div>
-      </div>
     </div>
   );
 };

@@ -17,15 +17,6 @@ export interface TimeBlock {
   color?: string;
 }
 
-export type AIProvider = "ollama" | "lmstudio" | "openai";
-
-export interface AISettings {
-  provider: AIProvider;
-  baseUrl: string;
-  model: string;
-  apiKey?: string;
-}
-
 export type NoteType =
   | "maintenance"
   | "habits"
@@ -63,7 +54,6 @@ export interface AppState {
   timeBlocks: TimeBlock[];
   notes: Record<string, Record<string, string>>; // type -> date -> content
   selectedDate: string; // YYYY-MM-DD
-  aiSettings: AISettings;
   energyConfig: EnergyConfig;
   uiSettings: UISettings;
 }
