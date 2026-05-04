@@ -220,7 +220,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
           white-space: nowrap;
           text-align: right;
-          width: 65px;
+          width: 45px;
         }
         .fc .fc-timegrid-axis-frame {
           justify-content: flex-end;
@@ -233,7 +233,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
           white-space: nowrap;
           text-align: right;
-          width: 65px;
+          width: 45px;
           overflow: visible !important;
         }
         .fc-v-event {
