@@ -25,7 +25,7 @@ export const BottomNav = ({
       {/* Date Controls */}
       <button 
         onClick={handleToday}
-        className="p-2 text-sky-400 active:scale-90 transition-transform"
+        className="p-2 my-2 text-sky-400 active:scale-90 transition-transform"
         title="Today"
       >
         <Clock size={24} />
@@ -33,7 +33,7 @@ export const BottomNav = ({
 
       <button 
         onClick={handlePrevDay}
-        className="p-2 text-slate-400 active:text-sky-400 active:scale-90 transition-all"
+        className="p-2 my-2 text-slate-400 active:text-sky-400 active:scale-90 transition-all"
         title="Previous Day"
       >
         <ChevronLeft size={24} />
@@ -41,7 +41,7 @@ export const BottomNav = ({
 
       <button 
         onClick={handleNextDay}
-        className="p-2 text-slate-400 active:text-sky-400 active:scale-90 transition-all"
+        className="p-2 my-2 text-slate-400 active:text-sky-400 active:scale-90 transition-all"
         title="Next Day"
       >
         <ChevronRight size={24} />
@@ -53,7 +53,7 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('tasks')}
         className={clsx(
-          "p-2 transition-all active:scale-90 rounded-[4px]",
+          "p-2 my-2 transition-all active:scale-90 rounded-[4px]",
           activeView === 'tasks' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Tasks"
@@ -64,7 +64,7 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('calendar')}
         className={clsx(
-          "p-2 transition-all active:scale-90 rounded-[4px]",
+          "p-2 my-2 transition-all active:scale-90 rounded-[4px]",
           activeView === 'calendar' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Timeline"
@@ -75,7 +75,7 @@ export const BottomNav = ({
       <button
         onClick={() => onViewChange('notes')}
         className={clsx(
-          "p-2 transition-all active:scale-90 rounded-[4px]",
+          "p-2 my-2 transition-all active:scale-90 rounded-[4px]",
           activeView === 'notes' ? "text-sky-400 bg-sky-500/10 shadow-[0_0_10px_rgba(14,165,233,0.2)] text-shadow-[0_0_8px_#0ba5e9]" : "text-slate-500"
         )}
         title="Notes"

@@ -121,7 +121,7 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
         </div>
 
         {/* Utility Actions - Cleaner icons with spacing */}
-        <div className="flex items-center gap-4 pl-4 flex-shrink-0">
+        <div className="flex items-center gap-4 pl-6 flex-shrink-0">
           <button 
             onClick={handleConvertToTasks}
             disabled={!localNote.trim()}
@@ -146,11 +146,7 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
         </div>
       </header>
 
-      <div className="px-6 pt-2 pb-1 flex items-center justify-between">
-        <span className="text-[9px] uppercase tracking-[0.4em] font-black text-sky-500/40">{activeType} interface</span>
-      </div>
-
-      <div className="flex-1 p-6 pt-2 pb-10">
+      <div className="flex-1 p-6 pt-6 pb-10">
         <textarea
           id="note-textarea"
           name="note-textarea"
@@ -160,7 +156,7 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
-          placeholder={`Initialize ${activeType.toUpperCase()} stream...`}
+          placeholder=""
           value={localNote}
           onChange={(e) => setLocalNote(e.target.value)}
           onBlur={handleBlur}
