@@ -89,6 +89,9 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
                   </label>
                   <input 
                     type="time" 
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                     value={energyConfig.startTime}
                     onChange={(e) => updateEnergyConfig({ startTime: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 outline-none focus:border-sky-500/50 transition-all color-scheme-dark"
@@ -100,6 +103,9 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
                   </label>
                   <input 
                     type="time" 
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                     value={energyConfig.endTime}
                     onChange={(e) => updateEnergyConfig({ endTime: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 outline-none focus:border-sky-500/50 transition-all color-scheme-dark"
@@ -345,6 +351,9 @@ const LogsContent: React.FC<{ getNotesInRange: any, initialDate: string }> = ({ 
             <span className="text-[8px] uppercase font-bold text-slate-600 ml-1">Initiation</span>
             <input 
               type="date" 
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-[11px] text-slate-200 outline-none focus:border-sky-500/50 transition-all color-scheme-dark"
@@ -354,6 +363,9 @@ const LogsContent: React.FC<{ getNotesInRange: any, initialDate: string }> = ({ 
             <span className="text-[8px] uppercase font-bold text-slate-600 ml-1">Termination</span>
             <input 
               type="date" 
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-[11px] text-slate-200 outline-none focus:border-sky-500/50 transition-all color-scheme-dark"

@@ -31,8 +31,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
               autoFocus
               type="text"
               inputMode="text"
+              autoComplete="one-time-code"
               autoCapitalize="off"
               autoCorrect="off"
+              spellCheck="false"
               placeholder="Execute command..."
               className="flex-1 bg-transparent text-lg holographic-text placeholder:text-slate-600 outline-none"
               value={query}

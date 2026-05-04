@@ -196,6 +196,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           --fc-neutral-bg-color: transparent;
           font-family: inherit;
         }
+        .fc .fc-scroller {
+          padding-bottom: 80px !important;
+        }
         .fc .fc-timegrid-slot {
           height: 80px !important;
           border-bottom: 0;

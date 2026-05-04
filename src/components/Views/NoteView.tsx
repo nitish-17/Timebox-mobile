@@ -156,6 +156,10 @@ export const NoteView: React.FC<NoteViewProps> = ({ addMessage }) => {
           name="note-textarea"
           ref={textareaRef}
           className="w-full h-full bg-transparent resize-none text-slate-300 text-lg leading-relaxed placeholder:text-slate-800 focus:outline-none"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           placeholder={`Initialize ${activeType.toUpperCase()} stream...`}
           value={localNote}
           onChange={(e) => setLocalNote(e.target.value)}

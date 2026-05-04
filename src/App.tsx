@@ -67,7 +67,7 @@ function App() {
         onCompleteScheduling={handleCompleteScheduling} 
       />
 
-      <main className="flex-1 relative overflow-hidden pb-[70px]">
+      <main className="flex-1 relative overflow-hidden mb-[70px]">
         <ViewManager 
           activeView={activeView} 
           schedulingTask={schedulingTask}

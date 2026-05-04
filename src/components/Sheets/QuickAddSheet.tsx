@@ -63,11 +63,14 @@ export const QuickAddSheet: React.FC<QuickAddSheetProps> = ({
                 id="quick-add-input"
                 name="quick-add-input"
                 type="text"
+                autoComplete="one-time-code"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
                 placeholder="Type mission details..."
                 className="w-full bg-slate-950 border border-sky-500/20 rounded-[4px] py-4 px-5 text-base text-slate-100 placeholder:text-slate-800 outline-none focus:border-sky-500/50 transition-all shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] pr-14"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                autoComplete="off"
               />
               <button
                 type="submit"
