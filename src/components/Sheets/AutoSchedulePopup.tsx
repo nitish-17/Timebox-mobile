@@ -20,14 +20,18 @@ export const AutoSchedulePopup: React.FC<AutoSchedulePopupProps> = ({
 }) => {
   const { selectedDate, bulkScheduleDetailed } = useStore();
   
-  // Calculate default start time: next 30-min block after now
+  // Calculate default start time: next 15-min block after now
   const getDefaultStartTime = () => {
     const now = new Date();
     const minutes = now.getMinutes();
     let defaultTime = startOfHour(now);
     
-    if (minutes < 30) {
+    if (minutes < 15) {
+      defaultTime = setMinutes(defaultTime, 15);
+    } else if (minutes < 30) {
       defaultTime = setMinutes(defaultTime, 30);
+    } else if (minutes < 45) {
+      defaultTime = setMinutes(defaultTime, 45);
     } else {
       defaultTime = addMinutes(setMinutes(defaultTime, 0), 60);
     }
@@ -106,8 +110,8 @@ export const AutoSchedulePopup: React.FC<AutoSchedulePopupProps> = ({
                     <Timer size={14} className="text-emerald-500" />
                     Duration per Quest (mins)
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[30, 60, 90].map(val => (
+                  <div className="grid grid-cols-4 gap-2">
+                    {[15, 30, 60, 90].map(val => (
                       <button
                         key={val}
                         onClick={() => setDuration(val)}

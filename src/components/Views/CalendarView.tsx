@@ -47,8 +47,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       // Timebox Logic: Offset by 1 hour (60 mins) from the top
       const scrollMinutes = Math.max(0, currentMinutes - 60);
       
-      // Slot height is 80px for 30min -> 2.666 px/min
-      const pixelsPerMinute = 80 / 30;
+      // Slot height is 40px for 15min -> 2.666 px/min
+      const pixelsPerMinute = 40 / 15;
       const scrollTop = Math.floor(scrollMinutes * pixelsPerMinute);
 
       const scroller = (calendarRef.current as any).elRef.current?.querySelector('.fc-scroller');
@@ -123,7 +123,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           initialView="timeGridDay"
           headerToolbar={false}
           allDaySlot={false}
-          slotDuration="00:30:00"
+          slotDuration="00:15:00"
           slotLabelInterval="01:00"
           slotLabelFormat={{
             hour: 'numeric',
@@ -200,7 +200,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           padding-bottom: 80px !important;
         }
         .fc .fc-timegrid-slot {
-          height: 80px !important;
+          height: 40px !important;
           border-bottom: 0;
           border-top: 1px solid rgba(14, 165, 233, 0.3) !important;
         }

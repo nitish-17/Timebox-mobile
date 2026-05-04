@@ -28,7 +28,6 @@ export const QuickAddSheet: React.FC<QuickAddSheetProps> = ({
     if (text.trim()) {
       addTask(text.trim(), "later");
       setText("");
-      onOpenChange(false);
     }
   };
 

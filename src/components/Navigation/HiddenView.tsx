@@ -7,7 +7,9 @@ import {
   Clock,
   Download,
   Upload,
-  FileText
+  FileText,
+  ShieldAlert,
+  Trash2
 } from 'lucide-react';
 import { useStore } from '../../hooks/useStore';
 import { clsx } from 'clsx';
@@ -16,7 +18,7 @@ import { exportDB, importDB } from "dexie-export-import";
 import { db } from "../../db/db";
 import type { NoteType, SystemNote } from '../../types';
 
-type TabType = 'ui' | 'energy' | 'backup' | 'logs';
+type TabType = 'ui' | 'energy' | 'backup' | 'logs' | 'system';
 
 interface HiddenViewProps {
 }
@@ -42,6 +44,7 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
     { id: 'energy', icon: <Zap size={20} />, label: 'Energy' },
     { id: 'backup', icon: <Database size={20} />, label: 'Backups' },
     { id: 'logs', icon: <FileText size={20} />, label: 'Logs' },
+    { id: 'system', icon: <ShieldAlert size={20} />, label: 'System' },
   ];
 
   const renderContent = () => {
@@ -125,6 +128,8 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
         return <BackupContent />;
       case 'logs':
         return <LogsContent getNotesInRange={getNotesInRange} initialDate={selectedDate} />;
+      case 'system':
+        return <SystemContent />;
       default:
         return null;
     }
@@ -163,6 +168,81 @@ export const HiddenView: React.FC<HiddenViewProps> = () => {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
+    </div>
+  );
+};
+
+const SystemContent: React.FC = () => {
+  const [confirmPurge, setConfirmPurge] = useState(false);
+
+  const handlePurge = async () => {
+    if (!confirmPurge) {
+      setConfirmPurge(true);
+      return;
+    }
+
+    try {
+      await db.delete();
+      window.location.reload();
+    } catch (error) {
+      console.error("System purge failed:", error);
+      alert("Purge failed. Check console for details.");
+    }
+  };
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <section className="space-y-4">
+        <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold block text-red-500/80">Danger Zone: System Override</label>
+        
+        <div className="grid grid-cols-1 gap-4">
+          <button 
+            onClick={handlePurge}
+            className={clsx(
+              "flex items-center justify-between p-6 rounded-2xl border transition-all group",
+              confirmPurge 
+                ? "bg-red-500/20 border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.2)]" 
+                : "bg-slate-900/50 border-red-500/10 hover:border-red-500/30"
+            )}
+          >
+            <div className="flex flex-col items-start gap-1">
+              <span className={clsx(
+                "text-xs uppercase font-black tracking-widest transition-colors",
+                confirmPurge ? "text-red-400" : "text-red-500/60"
+              )}>
+                {confirmPurge ? "Confirm Data Purge" : "Purge Database"}
+              </span>
+              <span className="text-[9px] uppercase font-bold text-slate-500">
+                {confirmPurge ? "Tap again to execute protocol" : "Erase all neural records and reset core"}
+              </span>
+            </div>
+            <Trash2 size={24} className={confirmPurge ? "text-red-400 animate-pulse" : "text-red-500/40"} />
+          </button>
+
+          {confirmPurge && (
+            <button 
+              onClick={() => setConfirmPurge(false)}
+              className="py-3 text-[10px] uppercase font-bold tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              Abort Protocol
+            </button>
+          )}
+        </div>
+      </section>
+
+      <div className={clsx(
+        "p-4 rounded-2xl transition-colors duration-500",
+        confirmPurge ? "bg-red-500/10 border border-red-500/20" : "bg-slate-900/50 border border-slate-800"
+      )}>
+        <p className={clsx(
+          "text-[9px] uppercase tracking-widest leading-relaxed text-center font-bold",
+          confirmPurge ? "text-red-400" : "text-slate-600"
+        )}>
+          {confirmPurge 
+            ? "CRITICAL: THIS ACTION IS IRREVERSIBLE. ALL TASKS, NOTES, AND CONFIGURATIONS WILL BE PERMANENTLY DELETED." 
+            : "Database purge erases the local Dexie instance. This is useful for clearing corrupt data or starting fresh without affecting browser cookies or other site data."}
+        </p>
+      </div>
     </div>
   );
 };

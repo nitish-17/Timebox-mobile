@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { db } from "../db/db";
 import type { Task, TimeBlock, NoteType, EnergyConfig, UISettings } from "../types";
 
@@ -151,7 +151,7 @@ export function useStore() {
   );
 
   const scheduleTask = useCallback(
-    async (taskId: string, startTime: string, durationMinutes: number = 30) => {
+    async (taskId: string, startTime: string, durationMinutes: number = 15) => {
       const start = new Date(startTime);
       const end = new Date(start.getTime() + durationMinutes * 60000);
       const dateStr = format(start, "yyyy-MM-dd");
@@ -218,6 +218,7 @@ export function useStore() {
     async (taskIds: string[], startDateTime: string, durationMinutes: number, gapMinutes: number) => {
       await db.transaction("rw", db.tasks, db.timeBlocks, async () => {
         let currentStartTime = new Date(startDateTime);
+        const initialDate = new Date(startDateTime);
         const dateStr = format(currentStartTime, "yyyy-MM-dd");
 
         // Sort tasks by creation date to maintain order
@@ -228,6 +229,13 @@ export function useStore() {
 
         for (const task of sortedTasks) {
           const endTime = new Date(currentStartTime.getTime() + durationMinutes * 60000);
+
+          // Stop if task extends into next day
+          if (!isSameDay(currentStartTime, initialDate)) break;
+          if (!isSameDay(endTime, initialDate)) {
+            const isMidnight = endTime.getHours() === 0 && endTime.getMinutes() === 0;
+            if (!isMidnight) break;
+          }
 
           const newBlock: TimeBlock = {
             id: Math.random().toString(36).substr(2, 9),
