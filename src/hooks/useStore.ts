@@ -214,6 +214,45 @@ export function useStore() {
     await db.timeBlocks.delete(id);
   }, []);
 
+  const bulkScheduleDetailed = useCallback(
+    async (taskIds: string[], startDateTime: string, durationMinutes: number, gapMinutes: number) => {
+      await db.transaction("rw", db.tasks, db.timeBlocks, async () => {
+        let currentStartTime = new Date(startDateTime);
+        const dateStr = format(currentStartTime, "yyyy-MM-dd");
+
+        // Sort tasks by creation date to maintain order
+        const tasksToSchedule = await db.tasks.bulkGet(taskIds);
+        const sortedTasks = tasksToSchedule
+          .filter((t): t is Task => !!t)
+          .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+        for (const task of sortedTasks) {
+          const endTime = new Date(currentStartTime.getTime() + durationMinutes * 60000);
+
+          const newBlock: TimeBlock = {
+            id: Math.random().toString(36).substr(2, 9),
+            taskId: task.id,
+            title: task.title,
+            startTime: currentStartTime.toISOString(),
+            endTime: endTime.toISOString(),
+            color: task.color || "rgba(11, 165, 233, 0.75)",
+          };
+
+          await db.timeBlocks.where("taskId").equals(task.id).delete();
+          await db.timeBlocks.add(newBlock);
+          await db.tasks.update(task.id, {
+            list: "today",
+            date: dateStr,
+          });
+
+          // Move start time for next task
+          currentStartTime = new Date(endTime.getTime() + gapMinutes * 60000);
+        }
+      });
+    },
+    [],
+  );
+
   const bulkScheduleTasks = useCallback(
     async (plannedTasks: { id: string; start: string; duration: number }[]) => {
       await db.transaction("rw", db.tasks, db.timeBlocks, async () => {
@@ -285,6 +324,7 @@ export function useStore() {
     deleteTimeBlock,
     scheduleTask,
     bulkScheduleTasks,
+    bulkScheduleDetailed,
     unscheduleTask,
     energyConfig,
     updateEnergyConfig,

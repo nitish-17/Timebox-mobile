@@ -2,13 +2,23 @@ import React, { useState } from 'react';
 import { useStore } from '../../hooks/useStore';
 import { TaskItem } from './TaskItem';
 import { TaskActionSheet } from '../Sheets/TaskActionSheet';
+import { BulkActionSheet } from '../Sheets/BulkActionSheet';
 import type { Task } from '../../types';
+import { clsx } from 'clsx';
 
 interface TaskViewProps {
   onStartScheduling: (task: Task) => void;
+  selectedTaskIds: Set<string>;
+  onToggleTaskSelection: (taskId: string) => void;
+  onClearSelection: () => void;
 }
 
-export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
+export const TaskView: React.FC<TaskViewProps> = ({ 
+  onStartScheduling,
+  selectedTaskIds,
+  onToggleTaskSelection,
+  onClearSelection
+}) => {
   const { 
     tasks, 
     timeBlocks, 
@@ -34,7 +44,10 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-[#020617]">
-      <div className="mobile-content pb-20 space-y-10">
+      <div className={clsx(
+        "mobile-content space-y-10 transition-all duration-300",
+        selectedTaskIds.size > 0 ? "pb-64" : "pb-20"
+      )}>
         {/* Today List */}
         <section>
           <div className="mb-4">
@@ -48,7 +61,10 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
                 task={task}
                 timeBlock={timeBlocks.find(b => b.taskId === task.id)}
                 toggleTask={toggleTask}
-                onOpenActions={() => setSelectedTaskId(task.id)}
+                onOpenActions={() => selectedTaskIds.size > 0 ? onToggleTaskSelection(task.id) : setSelectedTaskId(task.id)}
+                isSelected={selectedTaskIds.has(task.id)}
+                isSelectionMode={selectedTaskIds.size > 0}
+                onLongPress={() => onToggleTaskSelection(task.id)}
               />
             ))}
             {todayTasks.length === 0 && (
@@ -72,7 +88,10 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
                 task={task}
                 timeBlock={timeBlocks.find(b => b.taskId === task.id)}
                 toggleTask={toggleTask}
-                onOpenActions={() => setSelectedTaskId(task.id)}
+                onOpenActions={() => selectedTaskIds.size > 0 ? onToggleTaskSelection(task.id) : setSelectedTaskId(task.id)}
+                isSelected={selectedTaskIds.has(task.id)}
+                isSelectionMode={selectedTaskIds.size > 0}
+                onLongPress={() => onToggleTaskSelection(task.id)}
               />
             ))}
             {laterTasks.length === 0 && (
@@ -92,6 +111,12 @@ export const TaskView: React.FC<TaskViewProps> = ({ onStartScheduling }) => {
         onMove={(id, list) => { moveTaskToList(id, list); setSelectedTaskId(null); }}
         onUpdate={(id, updates) => { updateTask(id, updates); }}
         onStartScheduling={(task) => { onStartScheduling(task); setSelectedTaskId(null); }}
+      />
+
+      <BulkActionSheet 
+        selectedIds={Array.from(selectedTaskIds)}
+        isOpen={selectedTaskIds.size > 0}
+        onClose={onClearSelection}
       />
     </div>
   );

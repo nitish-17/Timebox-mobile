@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { CheckCircle, Circle, Clock } from 'lucide-react';
+import React, { memo, useRef } from 'react';
+import { CheckCircle, Circle, Clock, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Task, TimeBlock } from '../../types';
 import { clsx } from 'clsx';
@@ -9,33 +9,80 @@ interface TaskItemProps {
   timeBlock?: TimeBlock;
   toggleTask: (id: string) => void;
   onOpenActions: () => void;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
+  onLongPress?: () => void;
 }
 
 export const TaskItem = memo(({ 
-  task, timeBlock, toggleTask, onOpenActions 
+  task, timeBlock, toggleTask, onOpenActions, isSelected, isSelectionMode, onLongPress 
 }: TaskItemProps) => {
+  const longPressTimer = useRef<any>(null);
+
+  const handlePointerDown = () => {
+    if (isSelectionMode) return;
+
+    longPressTimer.current = setTimeout(() => {
+      onLongPress?.();
+    }, 500);
+  };
+
+  const handlePointerUp = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <div
       onClick={onOpenActions}
-      className="task-item-container active:scale-[0.98] transition-transform cursor-pointer"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+      onContextMenu={handleContextMenu}
+      className={clsx(
+        "task-item-container active:scale-[0.98] transition-all cursor-pointer",
+        isSelected && "is-selected"
+      )}
       style={{
         '--task-accent': task.color || 'var(--accent)'
       } as React.CSSProperties}
     >
       <div className="task-item-content">
-        <button 
-          className="task-item-toggle" 
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent opening actions sheet when toggling
-            toggleTask(task.id);
-          }}
-        >
-          {task.completed ? (
-            <CheckCircle size={22} color="var(--reward)" fill="var(--reward)" fillOpacity={0.2} />
-          ) : (
-            <Circle size={22} color="var(--accent)" />
+        <div className="flex items-center gap-3">
+          {isSelectionMode && (
+            <div className={clsx(
+              "w-6 h-6 rounded-full border flex items-center justify-center transition-all",
+              isSelected 
+                ? "bg-emerald-500 border-emerald-400 text-slate-950 shadow-[0_0_10px_#10b981]" 
+                : "bg-slate-900/50 border-slate-700 text-transparent"
+            )}>
+              <Check size={14} strokeWidth={4} />
+            </div>
           )}
-        </button>
+          
+          <button 
+            className="task-item-toggle" 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent opening actions sheet when toggling
+              if (isSelectionMode) {
+                onOpenActions();
+              } else {
+                toggleTask(task.id);
+              }
+            }}
+          >
+            {task.completed ? (
+              <CheckCircle size={22} color="var(--reward)" fill="var(--reward)" fillOpacity={0.2} />
+            ) : (
+              <Circle size={22} color="var(--accent)" />
+            )}
+          </button>
+        </div>
 
         <div className="task-item-body">
           <div className={clsx(
@@ -69,6 +116,12 @@ export const TaskItem = memo(({
           box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
           will-change: transform;
           contain: layout style;
+        }
+
+        .task-item-container.is-selected {
+          border-color: #10b981;
+          background: rgba(16, 185, 129, 0.1);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
         }
 
         .task-item-container::before {

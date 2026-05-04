@@ -15,8 +15,27 @@ function App() {
   const [activeView, setActiveView] = useState<ViewType>('tasks');
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [schedulingTask, setSchedulingTask] = useState<Task | null>(null);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
   const { messages, addMessage, dismissMessage } = useNotifications();
   const prevTasksRef = useRef<Task[]>([]);
+
+  const isMultiSelectMode = selectedTaskIds.size > 0;
+
+  const handleExitMultiSelect = useCallback(() => {
+    setSelectedTaskIds(new Set());
+  }, []);
+
+  const handleToggleTaskSelection = useCallback((taskId: string) => {
+    setSelectedTaskIds(prev => {
+      const next = new Set(prev);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
+      return next;
+    });
+  }, []);
 
   // Detect task completion (Solo Leveling Parity)
   useEffect(() => {
@@ -65,6 +84,9 @@ function App() {
       <ViewHeader 
         schedulingTask={schedulingTask} 
         onCompleteScheduling={handleCompleteScheduling} 
+        isMultiSelectMode={isMultiSelectMode}
+        selectedCount={selectedTaskIds.size}
+        onExitMultiSelect={handleExitMultiSelect}
       />
 
       <main className="flex-1 relative overflow-hidden mb-[70px]">
@@ -74,6 +96,9 @@ function App() {
           onCompleteScheduling={handleCompleteScheduling}
           onStartScheduling={handleStartScheduling}
           addMessage={addMessage}
+          selectedTaskIds={selectedTaskIds}
+          onToggleTaskSelection={handleToggleTaskSelection}
+          onClearSelection={handleExitMultiSelect}
         />
       </main>
 

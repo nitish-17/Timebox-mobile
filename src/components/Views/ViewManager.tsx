@@ -12,6 +12,9 @@ interface ViewManagerProps {
   onStartScheduling: (task: Task) => void;
   onCompleteScheduling: () => void;
   addMessage: (type: SystemMessage['type'], title: string, description: string) => void;
+  selectedTaskIds: Set<string>;
+  onToggleTaskSelection: (taskId: string) => void;
+  onClearSelection: () => void;
 }
 const viewOrder: ViewType[] = ['tasks', 'calendar', 'notes'];
 
@@ -21,6 +24,9 @@ export const ViewManager: React.FC<ViewManagerProps> = ({
   onStartScheduling,
   onCompleteScheduling,
   addMessage,
+  selectedTaskIds,
+  onToggleTaskSelection,
+  onClearSelection,
 }) => {
   const currentIndex = viewOrder.indexOf(activeView);
 
@@ -34,7 +40,12 @@ export const ViewManager: React.FC<ViewManagerProps> = ({
         className="flex h-full w-full"
       >
         <div className="w-full h-full flex-shrink-0 overflow-hidden">
-          <TaskView onStartScheduling={onStartScheduling} />
+          <TaskView 
+            onStartScheduling={onStartScheduling} 
+            selectedTaskIds={selectedTaskIds}
+            onToggleTaskSelection={onToggleTaskSelection}
+            onClearSelection={onClearSelection}
+          />
         </div>
         <div className="w-full h-full flex-shrink-0 overflow-hidden">
           <CalendarView 

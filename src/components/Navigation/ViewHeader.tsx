@@ -11,11 +11,17 @@ import { EnergyBar } from './EnergyBar';
 interface ViewHeaderProps {
   schedulingTask?: Task | null;
   onCompleteScheduling?: () => void;
+  isMultiSelectMode?: boolean;
+  selectedCount?: number;
+  onExitMultiSelect?: () => void;
 }
 
 export const ViewHeader: React.FC<ViewHeaderProps> = ({ 
   schedulingTask, 
-  onCompleteScheduling 
+  onCompleteScheduling,
+  isMultiSelectMode,
+  selectedCount,
+  onExitMultiSelect
 }) => {
   const { selectedDate, energyConfig } = useStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,6 +41,21 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
             <button 
               onClick={onCompleteScheduling}
               className="p-2 text-slate-400 active:text-sky-400"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        ) : isMultiSelectMode ? (
+          <div className="flex items-center justify-between py-1 px-2 bg-emerald-500/10 rounded-xl border border-emerald-500/30">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <span className="text-[10px] uppercase tracking-widest text-emerald-500/60 font-black">Selection Mode</span>
+                <span className="text-xs font-bold text-slate-100">{selectedCount} items selected</span>
+              </div>
+            </div>
+            <button 
+              onClick={onExitMultiSelect}
+              className="p-2 text-slate-400 active:text-emerald-400"
             >
               <X size={18} />
             </button>
